@@ -149,7 +149,10 @@ The model is instructed to stay within the provided information.
 ### 4. Receiving User Input from the Terminal
 
 ```typescript
-const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 
 function ask(question: string): Promise<string> {
   return new Promise((resolve) => rl.question(question, resolve));
@@ -174,11 +177,11 @@ const response = await model.invoke(messages);
 
 LangChain uses a typed message format:
 
-| Class           | Role                                  |
-|-----------------|---------------------------------------|
-| `SystemMessage` | Instructions / context for the model |
-| `HumanMessage`  | What the user typed                   |
-| `AIMessage`     | The model's reply (returned by invoke)|
+| Class           | Role                                   |
+| --------------- | -------------------------------------- |
+| `SystemMessage` | Instructions / context for the model   |
+| `HumanMessage`  | What the user typed                    |
+| `AIMessage`     | The model's reply (returned by invoke) |
 
 `model.invoke(messages)` sends the array to OpenRouter and waits for the reply.
 
@@ -199,7 +202,9 @@ console.log(`\nBot: ${response.content}\n`);
 ```typescript
 while (true) {
   const userInput = await ask("You: ");
-  if (userInput.trim().toLowerCase() === "exit") { break; }
+  if (userInput.trim().toLowerCase() === "exit") {
+    break;
+  }
   // ... call model ...
 }
 ```
@@ -227,22 +232,24 @@ const model = new ChatOpenAI({
 
 ### `model`
 
-| Field   | Value                   |
-|---------|-------------------------|
-| Type    | `string`                |
-| Example | `"openai/gpt-4o-mini"`  |
+| Field   | Value                  |
+| ------- | ---------------------- |
+| Type    | `string`               |
+| Example | `"openai/gpt-4o-mini"` |
 
 **What it does:** Tells OpenRouter which model to route your request to.  
 OpenRouter uses the format `provider/model-name`. `openai/gpt-4o-mini` means: use OpenAI's `gpt-4o-mini` model, routed through OpenRouter.
 
 **Why we need it:** Without a model name, OpenRouter does not know which model to call.
 
-**What happens if you change it:**  
-- `"anthropic/claude-3-haiku"` → uses Anthropic's Claude Haiku instead  
-- `"meta-llama/llama-3-8b-instruct"` → uses a free open-source model  
+**What happens if you change it:**
+
+- `"anthropic/claude-3-haiku"` → uses Anthropic's Claude Haiku instead
+- `"meta-llama/llama-3-8b-instruct"` → uses a free open-source model
 - Using a wrong name → you will get an API error
 
 **Example values:**
+
 ```
 "openai/gpt-4o"
 "openai/gpt-4o-mini"
@@ -254,11 +261,11 @@ OpenRouter uses the format `provider/model-name`. `openai/gpt-4o-mini` means: us
 
 ### `temperature`
 
-| Field   | Value           |
-|---------|-----------------|
-| Type    | `number`        |
-| Range   | `0.0` to `2.0`  |
-| Example | `0.2`           |
+| Field   | Value          |
+| ------- | -------------- |
+| Type    | `number`       |
+| Range   | `0.0` to `2.0` |
+| Example | `0.2`          |
 
 **What it does:** Controls how random or creative the model's output is.
 
@@ -268,11 +275,13 @@ OpenRouter uses the format `provider/model-name`. `openai/gpt-4o-mini` means: us
 
 **Why we use `0.2` here:** This chatbot looks up facts from the system prompt. We want accurate, consistent answers — not creative ones. Low temperature keeps the model focused.
 
-**What happens if you change it:**  
-- Raise to `1.0` → The chatbot may phrase answers differently each time  
+**What happens if you change it:**
+
+- Raise to `1.0` → The chatbot may phrase answers differently each time
 - Raise to `1.5` → Answers may become less accurate or go off-topic
 
 **Example values:**
+
 ```
 0.0   → maximum consistency (good for fact retrieval, classification)
 0.2   → slightly flexible but reliable (good for Q&A bots)
@@ -284,28 +293,29 @@ OpenRouter uses the format `provider/model-name`. `openai/gpt-4o-mini` means: us
 
 ### `maxTokens`
 
-| Field   | Value       |
-|---------|-------------|
-| Type    | `number`    |
-| Example | `500`       |
+| Field   | Value    |
+| ------- | -------- |
+| Type    | `number` |
+| Example | `500`    |
 
 **What it does:** Sets the maximum number of tokens (roughly words/word-pieces) the model can return in a single response.
 
 **Why we need it:** Without this limit the model may return very long responses that cost more and take longer. For a simple Q&A chatbot, 500 tokens is more than enough.
 
-**What happens if you change it:**  
-- Set to `50` → Very short answers; may get cut off mid-sentence  
-- Set to `2000` → Longer possible responses; useful for summaries or detailed explanations  
+**What happens if you change it:**
+
+- Set to `50` → Very short answers; may get cut off mid-sentence
+- Set to `2000` → Longer possible responses; useful for summaries or detailed explanations
 - Omit entirely → Uses the model's default maximum (can be thousands of tokens)
 
 ---
 
 ### `apiKey`
 
-| Field   | Value                                  |
-|---------|----------------------------------------|
-| Type    | `string`                               |
-| Example | `process.env.OPENROUTER_API_KEY`       |
+| Field   | Value                            |
+| ------- | -------------------------------- |
+| Type    | `string`                         |
+| Example | `process.env.OPENROUTER_API_KEY` |
 
 **What it does:** Authenticates your request with OpenRouter. Every API call must include a valid key.
 
@@ -317,10 +327,10 @@ OpenRouter uses the format `provider/model-name`. `openai/gpt-4o-mini` means: us
 
 ### `configuration.baseURL`
 
-| Field   | Value                               |
-|---------|-------------------------------------|
-| Type    | `string`                            |
-| Example | `"https://openrouter.ai/api/v1"`    |
+| Field   | Value                            |
+| ------- | -------------------------------- |
+| Type    | `string`                         |
+| Example | `"https://openrouter.ai/api/v1"` |
 
 **What it does:** Overrides the default OpenAI base URL so that `ChatOpenAI` sends requests to OpenRouter instead.
 
@@ -375,13 +385,13 @@ Goodbye!
 
 ## Common Mistakes and Fixes
 
-| Mistake | What happens | Fix |
-|---|---|---|
-| Missing `.env` file | `process.env.OPENROUTER_API_KEY` is `undefined` | Copy `.env.example` to `.env` and fill in the key |
-| Wrong API key | `401 Unauthorized` error from OpenRouter | Double-check the key at openrouter.ai/keys |
-| Wrong model name | `404` or model-not-found error | Check available models at openrouter.ai/models |
-| Not running `npm install` | `Cannot find module` errors | Run `npm install` in the project folder |
-| Using `node src/index.ts` directly | `SyntaxError` (Node.js can't run TypeScript) | Use `npm run dev` (ts-node) or `npm run build && npm start` |
+| Mistake                            | What happens                                    | Fix                                                         |
+| ---------------------------------- | ----------------------------------------------- | ----------------------------------------------------------- |
+| Missing `.env` file                | `process.env.OPENROUTER_API_KEY` is `undefined` | Copy `.env.example` to `.env` and fill in the key           |
+| Wrong API key                      | `401 Unauthorized` error from OpenRouter        | Double-check the key at openrouter.ai/keys                  |
+| Wrong model name                   | `404` or model-not-found error                  | Check available models at openrouter.ai/models              |
+| Not running `npm install`          | `Cannot find module` errors                     | Run `npm install` in the project folder                     |
+| Using `node src/index.ts` directly | `SyntaxError` (Node.js can't run TypeScript)    | Use `npm run dev` (ts-node) or `npm run build && npm start` |
 
 ---
 
@@ -393,10 +403,14 @@ Goodbye!
 
 3. **Change the model** — Replace `"openai/gpt-4o-mini"` with `"anthropic/claude-3-haiku"` (or any free model from openrouter.ai/models). Does the response style change?
 
-4. **Ignore empty input** — Currently if you press Enter without typing, the model is called with an empty string. Add a check to skip empty input gracefully. *(Hint: the code already has a blank-string check — find it and make sure it works correctly.)*
+4. **Ignore empty input** — Currently if you press Enter without typing, the model is called with an empty string. Add a check to skip empty input gracefully. _(Hint: the code already has a blank-string check — find it and make sure it works correctly.)_
 
 5. **JSON-only answers** — Add a line to the system prompt instructing the model to always respond in JSON format, for example: `{ "name": "Maya Levi", "role": "Frontend Developer", "answer": "..." }`.
 
 6. **`people` command** — If the user types `people`, print the list of all 10 people directly from the Node.js code (no LLM call needed), then continue the loop.
 
 7. **Token counting** — After each response, log `response.usage_metadata` to see how many tokens were used for input and output.
+
+# EX_1
+
+- Support History and extended context in the conversation.

@@ -143,6 +143,8 @@ async function main() {
     console.log("  Powered by LangChain + OpenRouter");
     console.log("  Type 'exit' to quit.");
     console.log("==============================================\n");
+    // Keep the full conversation so the model can answer follow-up questions.
+    const history = [new messages_1.SystemMessage(SYSTEM_PROMPT)];
     while (true) {
         const userInput = await ask("You: ");
         if (userInput.trim().toLowerCase() === "exit") {
@@ -155,14 +157,10 @@ async function main() {
             continue;
         }
         try {
-            // Build the messages array: system context + user question
-            const messages = [
-                new messages_1.SystemMessage(SYSTEM_PROMPT),
-                new messages_1.HumanMessage(userInput),
-            ];
-            // Send messages to the model and get a response
-            const response = await model.invoke(messages);
-            // response.content is the text reply from the model
+            history.push(new messages_1.HumanMessage(userInput));
+            // Send full history (system prompt + all prior turns + this question)
+            const response = await model.invoke(history);
+            history.push(new messages_1.AIMessage(String(response.content)));
             console.log(`\nBot: ${response.content}\n`);
         }
         catch (error) {
