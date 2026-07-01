@@ -1,0 +1,20 @@
+{
+  "name": "lab-3-strands-agent-sdk",
+  "version": "1.0.0",
+  "description": "Lab 3 — Agent with custom tools using Amazon Strands Agents SDK",
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "dev": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@strands-agents/sdk": "^0.1.0",
+    "dotenv": "^16.4.5",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.4.5"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "lab_4",
+  "version": "1.0.0",
+  "description": "Lab 4 — First Real Agent: Multi-agent system with LangChain, OpenRouter, and Express",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "client": "tsx src/client/run-client.ts"
+  },
+  "dependencies": {
+    "@langchain/core": "latest",
+    "@langchain/openai": "latest",
+    "langchain": "latest",
+    "zod": "latest",
+    "dotenv": "latest",
+    "express": "latest"
+  },
+  "devDependencies": {
+    "tsx": "latest",
+    "typescript": "latest",
+    "@types/node": "latest",
+    "@types/express": "latest"
+  }
+}

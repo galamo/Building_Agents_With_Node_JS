@@ -1,0 +1,21 @@
+{
+  "name": "lab_1",
+  "version": "1.0.0",
+  "description": "Lab 1 — Simple LLM Chatbot with Node.js, TypeScript, LangChain, and OpenRouter",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts"
+  },
+  "dependencies": {
+    "@langchain/core": "^0.3.58",
+    "@langchain/openai": "^0.3.0",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}
