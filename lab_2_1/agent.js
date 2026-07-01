@@ -132,6 +132,7 @@ async function main() {
     apiKey,
     temperature: 0.8,
     maxTokens: 400,
+    
   });
 
   const generateStoryImageTool = createGenerateStoryImageTool({
