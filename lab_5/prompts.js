@@ -4,11 +4,11 @@ const GOAL = `Plan a personalized trip based on the user's request. Include itin
 
 const CONTEXT_AND_TOOLS = `You have access to the following tools:
 - flight_finder: Search for flights between cities. Set convertToNIS=true when the user wants shekel prices to get NIS conversions in the same search (fewest steps).
-- currency_exchange: Convert USD prices to NIS/ILS. Always pass pricesInDollar as an array: ["450"] for one price or ["450", "520"] for multiple—never call this tool multiple times. Use only for ad-hoc conversions not covered by flight_finder. Exchange rate: 1 USD ≈ 3.2 NIS.`;
+- currency_exchange: Convert multiple USD prices to NIS/ILS in one bulk call. Pass every price in pricesInDollar as an array (e.g. ["450", "520", "610"])—never call this tool once per price. Use only for ad-hoc conversions not covered by flight_finder. Exchange rate: 1 USD ≈ 3.2 NIS.`;
 
 const RULES = `- Use the flight_finder tool to search for flights when planning travel between cities.
 - When the user asks for NIS/ILS/shekel prices, prefer flight_finder with convertToNIS=true so conversions happen in one tool call.
-- If you must use currency_exchange, pass every USD price in one pricesInDollar array (e.g. ["450"] or ["450", "520"])—do not issue multiple currency_exchange calls.
+- If you must use currency_exchange, pass every USD price in one pricesInDollar array (e.g. ["450", "520", "610"]) in a single tool call—do not call currency_exchange once per price.
 - Your final response must be valid JSON without markdown code fences or any wrapper text—it must be ready to parse directly.
 - The message field should contain the trip planning summary based on the requested days, style, budget, and interests.
 - Populate the flights array with the best options found via flight_finder.

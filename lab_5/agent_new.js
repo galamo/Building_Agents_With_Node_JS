@@ -27,7 +27,6 @@ import { z } from "zod";
 const model = new ChatOpenRouter({
   model: "openai/gpt-5.4",
   temperature: 0,
- 
 });
 
 // Web search tool – access to the web for travel info, hotels, destinations, etc.
@@ -83,19 +82,23 @@ const flightFinder = tool(
         .optional()
         .describe("Travel date (e.g. 2025-03-15) – optional")
     }),
+    
   }
 );
 
-// tool is not working as expected - fix it.
+function normalizePricesInDollar(pricesInDollar) {
+  const values = Array.isArray(pricesInDollar) ? pricesInDollar : [pricesInDollar];
+  return values.map((price) => String(price).trim()).filter(Boolean);
+}
+
+// tool is not working as expected - fix it. // explain why it is not working as expected.
 const currencyExchange = tool(({ pricesInDollar }) => {
-  if(!Array.isArray(pricesInDollar)) {
-    return "Wrong input type"
-  }
-  if (!pricesInDollar?.length) {
-    return "No prices provided. Pass pricesInDollar as an array, e.g. [\"450\"] for one price or [\"450\", \"520\", \"610\"] for multiple.";
+  const prices = normalizePricesInDollar(pricesInDollar);
+  if (!prices.length) {
+    return 'No prices provided. Pass pricesInDollar as an array, e.g. ["450"] for one price or ["450", "520", "610"] for multiple.';
   }
 
-  const conversions = pricesInDollar.map((p) => convertUsdToNis(p));
+  const conversions = prices.map((p) => convertUsdToNis(p));
   if (conversions.some((c) => c === null)) {
     return "Invalid price(s). Please provide numeric values in USD.";
   }
@@ -104,12 +107,15 @@ const currencyExchange = tool(({ pricesInDollar }) => {
 }, {
   name: "currency_exchange",
   description:
-    "Convert USD prices to Israeli New Shekel (NIS/ILS). Always pass pricesInDollar as an array: [\"450\"] for one price or [\"450\", \"520\"] for multiple—never call this tool repeatedly. Exchange rate: 1 USD ≈ 3.2 NIS.",
+    "Convert multiple USD prices to Israeli New Shekel (NIS/ILS) in one call. Always pass every price in pricesInDollar as an array—e.g. [\"450\", \"520\", \"610\"]—instead of calling this tool once per price. Exchange rate: 1 USD ≈ 3.2 NIS.",
   schema: z.object({
     pricesInDollar: z
-      .array(z.string())
-      .min(1)
-      .describe('USD prices to convert, always as an array: one price ["450"] or multiple ["450", "520", "610"]'),
+      .union([
+        z.array(z.union([z.string(), z.number()])).min(1),
+        z.union([z.string(), z.number()]),
+      ])
+      .transform((val) => normalizePricesInDollar(val))
+      .describe('USD prices to convert in bulk: ["450", "520", "610"]. Pass all amounts in one array.'),
   }),
 });
 
