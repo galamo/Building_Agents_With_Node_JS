@@ -35,7 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 const readline = __importStar(require("readline"));
 const dotenv = __importStar(require("dotenv"));
-const openai_1 = require("@langchain/openai");
+const openrouter_1 = require("@langchain/openrouter");
 const messages_1 = require("@langchain/core/messages");
 dotenv.config();
 // --- System Prompt: fictional people directory ---
@@ -117,16 +117,11 @@ Here are the people:
     - Personality: Leadership-driven, strategic thinker, former backend engineer
 `;
 // --- Model setup ---
-// We use ChatOpenAI from @langchain/openai but point it at OpenRouter's base URL.
-// OpenRouter is compatible with the OpenAI API format, so this works seamlessly.
-const model = new openai_1.ChatOpenAI({
-    model: "openai/gpt-4o-mini", // The model name on OpenRouter (provider/model-name format)
+const model = new openrouter_1.ChatOpenRouter({
+    model: "openai/gpt-4o-mini", // provider/model-name on OpenRouter
     temperature: 0.2, // Low temperature = more consistent, factual answers
     maxTokens: 500, // Limit response length to keep answers concise
     apiKey: process.env.OPENROUTER_API_KEY,
-    configuration: {
-        baseURL: "https://openrouter.ai/api/v1", // Point LangChain at OpenRouter instead of OpenAI
-    },
 });
 // --- CLI setup ---
 const rl = readline.createInterface({
@@ -143,8 +138,7 @@ async function main() {
     console.log("  Powered by LangChain + OpenRouter");
     console.log("  Type 'exit' to quit.");
     console.log("==============================================\n");
-    // Keep the full conversation so the model can answer follow-up questions.
-    const history = [new messages_1.SystemMessage(SYSTEM_PROMPT)];
+    const conversationHistory = [];
     while (true) {
         const userInput = await ask("You: ");
         if (userInput.trim().toLowerCase() === "exit") {
@@ -157,10 +151,18 @@ async function main() {
             continue;
         }
         try {
-            history.push(new messages_1.HumanMessage(userInput));
-            // Send full history (system prompt + all prior turns + this question)
-            const response = await model.invoke(history);
-            history.push(new messages_1.AIMessage(String(response.content)));
+            // Build the messages array: system context + full conversation history
+            const messages = [
+                new messages_1.SystemMessage(SYSTEM_PROMPT),
+                ...conversationHistory,
+                new messages_1.HumanMessage(userInput),
+            ];
+            // Send messages to the model and get a response
+            const response = await model.invoke(messages);
+            // Keep history in sync so follow-up questions retain prior context
+            conversationHistory.push(new messages_1.HumanMessage(userInput));
+            conversationHistory.push(response);
+            // response.content is the text reply from the model
             console.log(`\nBot: ${response.content}\n`);
         }
         catch (error) {

@@ -1,7 +1,11 @@
 import * as readline from "readline";
 import * as dotenv from "dotenv";
-import { ChatOpenAI } from "@langchain/openai";
-import { HumanMessage, SystemMessage } from "@langchain/core/messages";
+import { ChatOpenRouter } from "@langchain/openrouter";
+import {
+  BaseMessage,
+  HumanMessage,
+  SystemMessage,
+} from "@langchain/core/messages";
 
 dotenv.config();
 
@@ -85,16 +89,11 @@ Here are the people:
 `;
 
 // --- Model setup ---
-// We use ChatOpenAI from @langchain/openai but point it at OpenRouter's base URL.
-// OpenRouter is compatible with the OpenAI API format, so this works seamlessly.
-const model = new ChatOpenAI({
-  model: "openai/gpt-4o-mini",   // The model name on OpenRouter (provider/model-name format)
+const model = new ChatOpenRouter({
+  model: "openai/gpt-4o-mini",   // provider/model-name on OpenRouter
   temperature: 0.2,               // Low temperature = more consistent, factual answers
   maxTokens: 500,                 // Limit response length to keep answers concise
   apiKey: process.env.OPENROUTER_API_KEY,
-  configuration: {
-    baseURL: "https://openrouter.ai/api/v1", // Point LangChain at OpenRouter instead of OpenAI
-  },
 });
 
 // --- CLI setup ---
@@ -115,6 +114,8 @@ async function main(): Promise<void> {
   console.log("  Type 'exit' to quit.");
   console.log("==============================================\n");
 
+  const conversationHistory: BaseMessage[] = [];
+
   while (true) {
     const userInput = await ask("You: ");
 
@@ -130,14 +131,19 @@ async function main(): Promise<void> {
     }
 
     try {
-      // Build the messages array: system context + user question
+      // Build the messages array: system context + full conversation history
       const messages = [
         new SystemMessage(SYSTEM_PROMPT),
+        ...conversationHistory,
         new HumanMessage(userInput),
       ];
 
       // Send messages to the model and get a response
       const response = await model.invoke(messages);
+
+      // Keep history in sync so follow-up questions retain prior context
+      conversationHistory.push(new HumanMessage(userInput));
+      conversationHistory.push(response);
 
       // response.content is the text reply from the model
       console.log(`\nBot: ${response.content}\n`);

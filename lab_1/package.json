@@ -9,8 +9,8 @@
     "dev": "ts-node src/index.ts"
   },
   "dependencies": {
-    "@langchain/core": "^0.3.58",
-    "@langchain/openai": "^0.3.0",
+    "@langchain/core": "^1.1.48",
+    "@langchain/openrouter": "^0.3.0",
     "dotenv": "^16.4.5"
   },
   "devDependencies": {
