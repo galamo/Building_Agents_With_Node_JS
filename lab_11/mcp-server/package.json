@@ -1,0 +1,19 @@
+{
+  "name": "lab11-products-mcp",
+  "version": "1.0.0",
+  "description": "Products MCP server — exposes getProducts tool via Streamable HTTP",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.26.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

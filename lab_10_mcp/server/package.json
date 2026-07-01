@@ -1,0 +1,23 @@
+{
+  "name": "lab10-qa-server",
+  "version": "1.0.0",
+  "description": "LangChain quiz agent with MCP and standalone modes",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "chat": "node cli.js --mode mcp --topic langchain --message 'give me a question?'",
+    "chat1": "node cli.js --mode mcp --topic mcp --message 'give me a question?'",
+    "chat2": "node cli.js --mode mcp --topic mcp --message 'try to insert new topic'",
+    "chat3": "node cli.js --mode mcp --topic mcp --message 'add new question to the questions list'"
+  },
+  "dependencies": {
+    "@langchain/core": "^0.3.0",
+    "@langchain/openai": "^0.3.0",
+    "@modelcontextprotocol/sdk": "^1.26.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "langchain": "^0.3.0",
+    "zod": "^3.23.0"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "lab9-image-search-server",
+  "version": "1.0.0",
+  "description": "Image upload, vision extraction, pgvector indexing and search",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "init-db": "node scripts/init-db.js"
+  },
+  "dependencies": {
+    "@langchain/community": "^0.3.0",
+    "@langchain/core": "^0.3.0",
+    "@langchain/openai": "^0.3.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "langchain": "^0.3.0",
+    "multer": "^1.4.5-lts.1",
+    "pg": "^8.13.0",
+    "uuid": "^10.0.0",
+    "zod": "^3.23.0"
+  }
+}
